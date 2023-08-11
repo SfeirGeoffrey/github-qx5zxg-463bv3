@@ -16,12 +16,16 @@ export class QuizComponent implements OnInit, OnDestroy {
 
   colorCreateButtonColor: string = 'grey';
 
-  difficulties: Difficulty[] = [];
+  difficulties: Difficulty[] = [
+    new Difficulty('Easy', 'easy'),
+    new Difficulty('Medium', 'medium'),
+    new Difficulty('Hard', 'hard'),
+  ];
   difficultySelected: string | null = null;
 
   private categoriesObserver$: Observable<CategoriesDTO | null> =
     this.openTdbService.getCategories();
-  private subscription: Subscription;
+  private subscription: Subscription = new Subscription();
 
   constructor(
     private openTdbService: OpenTdbService,
@@ -33,14 +37,12 @@ export class QuizComponent implements OnInit, OnDestroy {
       if (response !== null) {
         this.categories = response.trivia_categories;
       } else {
+        console.error(
+          'Error during the call : Get categories. Try again later.'
+        );
         this.categories = [];
       }
     });
-    this.difficulties = [
-      new Difficulty('Easy', 'easy'),
-      new Difficulty('Medium', 'medium'),
-      new Difficulty('Hard', 'hard'),
-    ];
   }
 
   createQuiz(): void {

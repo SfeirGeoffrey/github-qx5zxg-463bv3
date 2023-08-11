@@ -17,7 +17,7 @@ export class OpenTdbService {
       .pipe(
         tap(() => console.log(`Call getCategories`)),
         catchError((err) => {
-          console.log(err);
+          console.error(err);
           return of(null);
         })
       );
@@ -29,7 +29,7 @@ export class OpenTdbService {
     difficulty: string,
     type: string
   ): Observable<QuestionsDTO | null> {
-    let url: string =
+    const url: string =
       'https://opentdb.com/api.php?amount=' +
       amount +
       '&category=' +
@@ -42,7 +42,7 @@ export class OpenTdbService {
     return this.httpClient.get<QuestionsDTO>(url).pipe(
       tap(() => console.log(`Call getQuestions`)),
       catchError((err) => {
-        console.log(err);
+        console.error(err);
         return of(null);
       })
     );

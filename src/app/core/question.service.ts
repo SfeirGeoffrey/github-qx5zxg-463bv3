@@ -36,6 +36,9 @@ export class QuestionService {
             question = this.createAnswersList(question);
           });
         } else {
+          console.error(
+            'Error during the call : Get Questions. Try again later'
+          );
           this.questionnaire = [];
         }
       });

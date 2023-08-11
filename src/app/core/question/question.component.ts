@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { QuestionService } from '../question.service';
-import { Question } from '../question.type';
+import { Question, QuestionDTO } from '../question.type';
 
 @Component({
   selector: 'app-question',
@@ -9,7 +9,9 @@ import { Question } from '../question.type';
 })
 export class QuestionComponent {
   @Input() displayResult: boolean = false;
-  @Input() question: Question;
+  @Input() question: Question = new Question(
+    new QuestionDTO('', '', '', '', '', [])
+  );
 
   buttonColor: string = 'green';
 
