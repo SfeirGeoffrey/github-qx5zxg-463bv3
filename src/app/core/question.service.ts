@@ -25,6 +25,7 @@ export class QuestionService {
       difficulty,
       type
     );
+    this.questionnaire = [];
     this.openTdbService
       .getQuestions(amount, category, difficulty, type)
       .subscribe((response) => {
