@@ -18,7 +18,7 @@ export class QuestionComponent {
   constructor(public questionService: QuestionService) {}
 
   selectAnswer(answerSelected: string) {
-    if (this.question !== null) {
+    if (this.question !== null && !this.displayResult) {
       this.question.answerSelected = answerSelected;
     }
   }
