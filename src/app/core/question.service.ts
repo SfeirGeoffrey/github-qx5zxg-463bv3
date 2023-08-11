@@ -1,15 +1,18 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
+import { Observable, of, Subscription } from 'rxjs';
 import { OpenTdbService } from './open-tdb.service';
-import { Observable } from 'rxjs';
-import { Question } from './question.type';
+import { Question, QuestionsDTO } from './question.type';
 
 @Injectable({
   providedIn: 'root',
 })
-export class QuestionService {
+export class QuestionService implements OnDestroy {
   questionnaire: Question[] = [];
 
   nbCorrectAnswers: number = 0;
+
+  private questionsObserver$: Observable<QuestionsDTO | null> = of(null);
+  private subscription: Subscription = new Subscription();
 
   constructor(private openTdbService: OpenTdbService) {}
 
@@ -19,30 +22,27 @@ export class QuestionService {
     difficulty: string,
     type: string
   ): void {
-    const observableQuestions$ = this.openTdbService.getQuestions(
+    this.questionnaire = [];
+    this.questionsObserver$ = this.openTdbService.getQuestions(
       amount,
       category,
       difficulty,
       type
     );
-    this.questionnaire = [];
-    this.openTdbService
-      .getQuestions(amount, category, difficulty, type)
-      .subscribe((response) => {
-        if (response !== null && response.response_code === 0) {
-          response.results.forEach((questionDTO) => {
-            this.questionnaire.push(new Question(questionDTO));
-          });
-          this.questionnaire.forEach((question) => {
-            question = this.createAnswersList(question);
-          });
-        } else {
-          console.error(
-            'Error during the call : Get Questions. Try again later'
-          );
-          this.questionnaire = [];
-        }
-      });
+    this.subscription = this.questionsObserver$.subscribe((response) => {
+      if (response !== null && response.response_code === 0) {
+        response.results.forEach((questionDTO) => {
+          this.questionnaire.push(new Question(questionDTO));
+        });
+        this.questionnaire.forEach((question) => {
+          question = this.createAnswersList(question);
+        });
+      } else {
+        console.error(
+          'Error during the call : Get Questions. Try again later.'
+        );
+      }
+    });
   }
 
   private createAnswersList(question: Question): Question {
@@ -73,5 +73,9 @@ export class QuestionService {
   public reset(): void {
     this.nbCorrectAnswers = 0;
     this.questionnaire = [];
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 }
